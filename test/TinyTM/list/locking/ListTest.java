@@ -20,6 +20,7 @@ import TinyTM.locking.OnAbort;
 import TinyTM.locking.OnCommit;
 import TinyTM.locking.OnStart;
 import TinyTM.locking.OnValidate;
+import junit.framework.TestCase;
 
 /**
  *
