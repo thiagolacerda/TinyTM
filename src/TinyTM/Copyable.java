@@ -14,10 +14,11 @@ package TinyTM;
 
 /**
  * Interface that exports public copyTo method
+ *
  * @param <T> type
  * @author Maurice Herlihy
  */
 public interface Copyable<T> {
-  void copyTo(T target);  
+    void copyTo(T target);
 }
 

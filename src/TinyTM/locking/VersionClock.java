@@ -16,30 +16,34 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Combines global and thread-local timestamps.
+ *
  * @author Maurice Herlihy
  */
 public class VersionClock {
-  // global clock read and advanced by all
-  static AtomicLong global = new AtomicLong();
-  // thread-local cached copy of global clock
-  static ThreadLocal<Long> local = new ThreadLocal<Long>() {
-    @Override
-    protected Long initialValue() {
-      return 0L;
+    // global clock read and advanced by all
+    static AtomicLong global = new AtomicLong();
+    // thread-local cached copy of global clock
+    static ThreadLocal<Long> local = new ThreadLocal<Long>() {
+        @Override
+        protected Long initialValue() {
+            return 0L;
+        }
+    };
+
+    public static void setReadStamp() {
+        local.set(global.get());
     }
-  };
-  
-  public static void setReadStamp() {
-    local.set(global.get());
-  }
-  public static long getReadStamp() {
-    return local.get();
-  }
-  public static void setWriteStamp() {
-    local.set(global.incrementAndGet());
-  }
-  public static long getWriteStamp() {
-    return local.get();
-  }
-  
+
+    public static long getReadStamp() {
+        return local.get();
+    }
+
+    public static void setWriteStamp() {
+        local.set(global.incrementAndGet());
+    }
+
+    public static long getWriteStamp() {
+        return local.get();
+    }
+
 }

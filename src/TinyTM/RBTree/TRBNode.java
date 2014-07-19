@@ -17,69 +17,68 @@ import TinyTM.exceptions.AbortedException;
 import TinyTM.locking.LockObject;
 
 /**
- *
  * @author mph
  */
 public class TRBNode implements RBNode {
-  AtomicObject<SRBNode> atomic;
-  
-  public TRBNode(Class<AtomicObject<SRBNode>> _class) throws InstantiationException, IllegalAccessException {
-    atomic = new LockObject<SRBNode>(new SRBNode());
-  }
+    AtomicObject<SRBNode> atomic;
 
-  public int getValue() {
-    int value = atomic.openRead().getValue();
-    if (!atomic.validate())
-      throw new AbortedException();
-    return value;
-  }
+    public TRBNode(Class<AtomicObject<SRBNode>> _class) throws InstantiationException, IllegalAccessException {
+        atomic = new LockObject<SRBNode>(new SRBNode());
+    }
 
-  public void setValue(int value) {
-    atomic.openWrite().setValue(value);
-  }
+    public int getValue() {
+        int value = atomic.openRead().getValue();
+        if (!atomic.validate())
+            throw new AbortedException();
+        return value;
+    }
 
-  public Color getColor() {
-    Color value = atomic.openRead().getColor();
-    if (!atomic.validate())
-      throw new AbortedException();
-    return value;
-  }
+    public void setValue(int value) {
+        atomic.openWrite().setValue(value);
+    }
 
-  public void setColor(Color value) {
-    atomic.openWrite().setColor(value);
-  }
+    public Color getColor() {
+        Color value = atomic.openRead().getColor();
+        if (!atomic.validate())
+            throw new AbortedException();
+        return value;
+    }
 
-  public RBNode getParent() {
-    RBNode value = atomic.openRead().getParent();
-    if (!atomic.validate())
-      throw new AbortedException();
-    return value;
-  }
+    public void setColor(Color value) {
+        atomic.openWrite().setColor(value);
+    }
 
-  public void setParent(RBNode value) {
-    atomic.openWrite().setParent(value);
-  }
+    public RBNode getParent() {
+        RBNode value = atomic.openRead().getParent();
+        if (!atomic.validate())
+            throw new AbortedException();
+        return value;
+    }
 
-  public RBNode getLeft() {
-    RBNode value = atomic.openRead().getLeft();
-    if (!atomic.validate())
-      throw new AbortedException();
-    return value;
-  }
+    public void setParent(RBNode value) {
+        atomic.openWrite().setParent(value);
+    }
 
-  public void setLeft(RBNode value) {
-    atomic.openWrite().setLeft(value);
-  }
+    public RBNode getLeft() {
+        RBNode value = atomic.openRead().getLeft();
+        if (!atomic.validate())
+            throw new AbortedException();
+        return value;
+    }
 
-  public RBNode getRight() {
-    RBNode value = atomic.openRead().getRight();
-    if (!atomic.validate())
-      throw new AbortedException();
-    return value;
-  }
+    public void setLeft(RBNode value) {
+        atomic.openWrite().setLeft(value);
+    }
 
-  public void setRight(RBNode value) {
-    atomic.openWrite().setRight(value);
-  }
-  
+    public RBNode getRight() {
+        RBNode value = atomic.openRead().getRight();
+        if (!atomic.validate())
+            throw new AbortedException();
+        return value;
+    }
+
+    public void setRight(RBNode value) {
+        atomic.openWrite().setRight(value);
+    }
+
 }

@@ -14,17 +14,27 @@ package TinyTM.RBTree;
 
 /**
  * Red-Black Tree node
+ *
  * @author Maurice Herlihy
  */
 public interface RBNode {
-  int getValue();		// node value
-  void setValue(int newValue);
-  Color getColor();    // color: red or black?
-  void setColor(Color newColor);
-  RBNode getParent();    // parent node
-  void setParent(RBNode newParent);
-  RBNode getLeft();    // left child
-  void setLeft(RBNode newLeft);
-  RBNode getRight();    // right child
-  void setRight(RBNode newRight);
+    int getValue();        // node value
+
+    void setValue(int newValue);
+
+    Color getColor();    // color: red or black?
+
+    void setColor(Color newColor);
+
+    RBNode getParent();    // parent node
+
+    void setParent(RBNode newParent);
+
+    RBNode getLeft();    // left child
+
+    void setLeft(RBNode newLeft);
+
+    RBNode getRight();    // right child
+
+    void setRight(RBNode newRight);
 }

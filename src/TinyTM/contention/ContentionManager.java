@@ -12,15 +12,16 @@
 
 package TinyTM.contention;
 
-import TinyTM.*;
+import TinyTM.Defaults;
+import TinyTM.Transaction;
 import TinyTM.exceptions.PanicException;
 
 /**
  * Contention Manager Interface for TinyTM
- *
+ * <p/>
  * From "The Art of Multiprocessor Programming",
  * by Maurice Herlihy and Nir Shavit.
- *
+ * <p/>
  * This work is licensed under a Creative Commons Attribution-Share Alike 3.0 United States License.
  * http://i.creativecommons.org/l/by-sa/3.0/us/88x31.png
  *
@@ -28,25 +29,25 @@ import TinyTM.exceptions.PanicException;
  */
 public abstract class ContentionManager {
 
-  static ThreadLocal<ContentionManager> local = new ThreadLocal<ContentionManager>() {
+    static ThreadLocal<ContentionManager> local = new ThreadLocal<ContentionManager>() {
 
-    @Override
-    protected ContentionManager initialValue() {
-      try {
-        return (ContentionManager) Defaults.MANAGER.newInstance();
-      } catch (Exception ex) {
-        throw new PanicException(ex);
-      }
+        @Override
+        protected ContentionManager initialValue() {
+            try {
+                return (ContentionManager) Defaults.MANAGER.newInstance();
+            } catch (Exception ex) {
+                throw new PanicException(ex);
+            }
+        }
+    };
+
+    public static ContentionManager getLocal() {
+        return local.get();
     }
-  };
 
-  public abstract void resolve(Transaction me, Transaction other);
+    public static void setLocal(ContentionManager m) {
+        local.set(m);
+    }
 
-  public static ContentionManager getLocal() {
-    return local.get();
-  }
-
-  public static void setLocal(ContentionManager m) {
-    local.set(m);
-  }
+    public abstract void resolve(Transaction me, Transaction other);
 }

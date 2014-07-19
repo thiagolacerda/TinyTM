@@ -13,33 +13,36 @@
 package TinyTM.contention;
 
 import TinyTM.Transaction;
+
 import java.util.Random;
 
 /**
  * Simple adaptive backoff contention manager.
+ *
  * @author Maurice Herlihy
  */
 public class BackoffManager extends ContentionManager {
-  private static final int MIN_DELAY = 32;
-  private static final int MAX_DELAY = 1024;
-  Random random = new Random();
-  Transaction rival = null;
-  int delay = MIN_DELAY;
-  public void resolve(Transaction me, Transaction other) {
-    if (other != rival) {
-      rival = other;
-      delay = MIN_DELAY;
+    private static final int MIN_DELAY = 32;
+    int delay = MIN_DELAY;
+    private static final int MAX_DELAY = 1024;
+    Random random = new Random();
+    Transaction rival = null;
+
+    public void resolve(Transaction me, Transaction other) {
+        if (other != rival) {
+            rival = other;
+            delay = MIN_DELAY;
+        }
+        if (delay < MAX_DELAY) {            // be patient
+            try {
+                Thread.sleep(random.nextInt(delay));
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
+            delay = 2 * delay;
+        } else {                          // patience exhausted
+            other.abort();
+            delay = MIN_DELAY;
+        }
     }
-    if (delay < MAX_DELAY) {            // be patient
-      try {
-        Thread.sleep(random.nextInt(delay));
-      } catch (InterruptedException ex) {
-        Thread.currentThread().interrupt();
-      }
-      delay = 2 * delay;
-    } else {                          // patience exhausted
-      other.abort();
-      delay = MIN_DELAY;
-    }
-  }  
 }

@@ -11,6 +11,7 @@
  */
 
 package TinyTM;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -18,10 +19,11 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation indicating that class is atomic (can be shared among transactions).
+ *
  * @author Maurice Herlihy
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface atomic {
-  
+
 }

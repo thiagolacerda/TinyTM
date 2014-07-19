@@ -17,24 +17,25 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Call this code when a transaction must decide whether it can commit.
+ *
  * @author Maurice Herlihy
  */
-public class OnValidate implements Callable<Boolean>{
-  private static final long TIMEOUT = 1024;
-  
-  public Boolean call() throws Exception {
-    WriteSet writeSet = WriteSet.getLocal();
-    ReadSet readSet  = ReadSet.getLocal();
-    if (!writeSet.tryLock(TIMEOUT, TimeUnit.MILLISECONDS)) {
-      return false;
+public class OnValidate implements Callable<Boolean> {
+    private static final long TIMEOUT = 1024;
+
+    public Boolean call() throws Exception {
+        WriteSet writeSet = WriteSet.getLocal();
+        ReadSet readSet = ReadSet.getLocal();
+        if (!writeSet.tryLock(TIMEOUT, TimeUnit.MILLISECONDS)) {
+            return false;
+        }
+        for (LockObject x : readSet) {
+            if (x.lock.isLocked() && !x.lock.isHeldByCurrentThread())
+                return false;
+            if (!x.validate()) {
+                return false;
+            }
+        }
+        return true;
     }
-    for (LockObject x : readSet) {
-      if (x.lock.isLocked() && !x.lock.isHeldByCurrentThread())
-        return false;
-      if (!x.validate()) {
-        return false;
-      }
-    }
-    return true;
-  }
 }

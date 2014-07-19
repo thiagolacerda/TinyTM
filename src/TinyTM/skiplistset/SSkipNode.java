@@ -17,64 +17,73 @@ import TinyTM.Copyable;
 
 /**
  * SequentialSSkipNode node
+ *
  * @param <T> type
  * @author Maurice Herlihy
  */
 public class SSkipNode<T> implements SkipNode<T>, Copyable<SSkipNode<T>> {
-  AtomicArray<SkipNode<T>> next;
-  int key;
-  T item;
-  
-  public SSkipNode() {}
-  
-  public SSkipNode(int level) {
-    next = new AtomicArray<SkipNode<T>>(SkipNode.class, level);
-  }
-  public SSkipNode(int level, int key, T item) {
-    this(level);
-    this.key  = key;
-    this.item = item;
-  }
-  /**
-   ** @return array of nodes further along in the skip list.
-   */
-  public AtomicArray<SkipNode<T>> getNext() {
-    return next;
-  }
-  /**
-   ** @param value new array of nodes further along in the skip list.
-   */
-  public void setNext(AtomicArray<SkipNode<T>> value) {
-    next = value;
-  }
-  /**
-   ** @return node key.
-   */
-  public int getKey() {
-    return key;
-  }
-  /**
-   ** @param value new node key.
-   */
-  public void setKey(int value) {
-    key = value;
-  }
-  /**
-   ** @return node item.
-   */
-  public T getItem() {
-    return item;
-  }
-  /**
-   ** @param value new node value.
-   */
-  public void setItem(T value) {
-    item = value;
-  }
-  
-  public void copyTo(SSkipNode<T> target) {
-    target.next = next;
-    target.key     = key;
-    target.item    = item;
-  }
+    AtomicArray<SkipNode<T>> next;
+    int key;
+    T item;
+
+    public SSkipNode() {
+    }
+
+    public SSkipNode(int level) {
+        next = new AtomicArray<SkipNode<T>>(SkipNode.class, level);
+    }
+
+    public SSkipNode(int level, int key, T item) {
+        this(level);
+        this.key = key;
+        this.item = item;
+    }
+
+    /**
+     * * @return array of nodes further along in the skip list.
+     */
+    public AtomicArray<SkipNode<T>> getNext() {
+        return next;
+    }
+
+    /**
+     * * @param value new array of nodes further along in the skip list.
+     */
+    public void setNext(AtomicArray<SkipNode<T>> value) {
+        next = value;
+    }
+
+    /**
+     * * @return node key.
+     */
+    public int getKey() {
+        return key;
+    }
+
+    /**
+     * * @param value new node key.
+     */
+    public void setKey(int value) {
+        key = value;
+    }
+
+    /**
+     * * @return node item.
+     */
+    public T getItem() {
+        return item;
+    }
+
+    /**
+     * * @param value new node value.
+     */
+    public void setItem(T value) {
+        item = value;
+    }
+
+    public void copyTo(SSkipNode<T> target) {
+        target.next = next;
+        target.key = key;
+        target.item = item;
+    }
 }

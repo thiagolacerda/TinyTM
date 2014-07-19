@@ -14,11 +14,12 @@ package TinyTM.locking;
 
 /**
  * Handler for transaction start.
+ *
  * @author Maurice Herlihy
  */
 public class OnStart implements Runnable {
-  public void run() {
-    VersionClock.setReadStamp();
-  }
-  
+    public void run() {
+        VersionClock.setReadStamp();
+    }
+
 }

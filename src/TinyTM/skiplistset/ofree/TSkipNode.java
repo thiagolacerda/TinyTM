@@ -21,60 +21,68 @@ import TinyTM.skiplistset.SkipNode;
 
 /**
  * Transactional SkipList node
+ *
  * @param <T> type
  * @author Maurice Herlihy
  */
 public class TSkipNode<T> implements SkipNode<T> {
-  AtomicObject<SSkipNode<T>> atomic;
-  public TSkipNode(int level) {
-    atomic = new FreeObject<SSkipNode<T>>(new SSkipNode<T>(level));
-  }
-  public TSkipNode(int level, int key, T item){
-    atomic = new FreeObject<SSkipNode<T>>(new SSkipNode<T>(level, key, item));
-  }
-  public TSkipNode(int level, T item){
-    atomic = new FreeObject<SSkipNode<T>>(new SSkipNode<T>(level,
-        item.hashCode(), item));
-  }
-  /**
-   ** @return array of nodes further along in the skip list.
-   */
-  public AtomicArray<SkipNode<T>> getNext() {
-    AtomicArray<SkipNode<T>> forward = atomic.openRead().getNext();
-    if (!atomic.validate())
-      throw new AbortedException();
-    return forward;
-  }
-  /**
-   ** @param value new array of nodes further along in the skip list.
-   */
-  public void setNext(AtomicArray<SkipNode<T>> value) {
-    atomic.openWrite().setNext(value);
-  }
-  /**
-   ** @return node value.
-   */
-  public int getKey() {
-    int key = atomic.openRead().getKey();
-    if (!atomic.validate())
-      throw new AbortedException();
-    return key;
-  }
-  /**
-   ** @param value new node value.
-   */
-  public void setKey(int value) {
-    atomic.openWrite().setKey(value);
-  }
+    AtomicObject<SSkipNode<T>> atomic;
 
-  public T getItem() {
-    T item = atomic.openRead().getItem();
-    if (!atomic.validate())
-      throw new AbortedException();
-    return item;
-  }
+    public TSkipNode(int level) {
+        atomic = new FreeObject<SSkipNode<T>>(new SSkipNode<T>(level));
+    }
 
-  public void setItem(T value) {
-    atomic.openWrite().setItem(value);
-  }
+    public TSkipNode(int level, int key, T item) {
+        atomic = new FreeObject<SSkipNode<T>>(new SSkipNode<T>(level, key, item));
+    }
+
+    public TSkipNode(int level, T item) {
+        atomic = new FreeObject<SSkipNode<T>>(new SSkipNode<T>(level,
+                item.hashCode(), item));
+    }
+
+    /**
+     * * @return array of nodes further along in the skip list.
+     */
+    public AtomicArray<SkipNode<T>> getNext() {
+        AtomicArray<SkipNode<T>> forward = atomic.openRead().getNext();
+        if (!atomic.validate())
+            throw new AbortedException();
+        return forward;
+    }
+
+    /**
+     * * @param value new array of nodes further along in the skip list.
+     */
+    public void setNext(AtomicArray<SkipNode<T>> value) {
+        atomic.openWrite().setNext(value);
+    }
+
+    /**
+     * * @return node value.
+     */
+    public int getKey() {
+        int key = atomic.openRead().getKey();
+        if (!atomic.validate())
+            throw new AbortedException();
+        return key;
+    }
+
+    /**
+     * * @param value new node value.
+     */
+    public void setKey(int value) {
+        atomic.openWrite().setKey(value);
+    }
+
+    public T getItem() {
+        T item = atomic.openRead().getItem();
+        if (!atomic.validate())
+            throw new AbortedException();
+        return item;
+    }
+
+    public void setItem(T value) {
+        atomic.openWrite().setItem(value);
+    }
 }

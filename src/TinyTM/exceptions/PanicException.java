@@ -21,13 +21,13 @@ public class PanicException extends java.lang.RuntimeException {
     public PanicException() {
     }
 
-    public PanicException(String format, Object ... args) {
-      super(String.format(format, args));
+    public PanicException(String format, Object... args) {
+        super(String.format(format, args));
     }
 
     /**
      * Creates a new <code>PanicException</code> with the specified detail message.
-     * 
+     *
      * @param msg the detail message.
      */
     public PanicException(String msg) {
@@ -36,7 +36,7 @@ public class PanicException extends java.lang.RuntimeException {
 
     /**
      * Creates an <code>PanicException</code> with the specified cause.
-     * 
+     *
      * @param cause Throwable that caused PanicException to be thrown
      */
     public PanicException(Throwable cause) {

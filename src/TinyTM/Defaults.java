@@ -14,19 +14,20 @@ package TinyTM;
 
 /**
  * Default Classes
+ *
  * @author Maurice Herlihy
  */
 public interface Defaults {
-  
-  /**
-   * how many threads
-   **/
-  public static final int THREADS = 1;
-  /**
-   * benchmark duration in milliseconds
-   **/
-  public static final int TIME = 10000;
-  public static final int EXPERIMENT = 100;
-  public static final Class MANAGER = TinyTM.contention.BackoffManager.class;
-  
+
+    /**
+     * how many threads
+     */
+    public static final int THREADS = 1;
+    /**
+     * benchmark duration in milliseconds
+     */
+    public static final int TIME = 10000;
+    public static final int EXPERIMENT = 100;
+    public static final Class MANAGER = TinyTM.contention.BackoffManager.class;
+
 }

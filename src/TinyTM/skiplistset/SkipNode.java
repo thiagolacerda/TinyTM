@@ -16,33 +16,38 @@ import TinyTM.AtomicArray;
 
 /**
  * Common interface for SkipList nodes.
+ *
  * @param <T> type
  * @author Maurice Herlihy
  */
 public interface SkipNode<T> {
-  /**
-   ** @return array of nodes further along in the skip list.
-   */
-  public AtomicArray<SkipNode<T>> getNext();
-  /**
-   * @param value new atomic array
-   */
-  public void setNext(AtomicArray<SkipNode<T>> value);
-  
-  /**
-   ** @return node value.
-   */
-  public int getKey();
-  /**
-   ** @param value new node value.
-   */
-  public void setKey(int value);
-  /**
-   ** @return node value.
-   */
-  public T getItem();
-  /**
-   ** @param value new node value.
-   */
-  public void setItem(T value);
+    /**
+     * * @return array of nodes further along in the skip list.
+     */
+    public AtomicArray<SkipNode<T>> getNext();
+
+    /**
+     * @param value new atomic array
+     */
+    public void setNext(AtomicArray<SkipNode<T>> value);
+
+    /**
+     * * @return node value.
+     */
+    public int getKey();
+
+    /**
+     * * @param value new node value.
+     */
+    public void setKey(int value);
+
+    /**
+     * * @return node value.
+     */
+    public T getItem();
+
+    /**
+     * * @param value new node value.
+     */
+    public void setItem(T value);
 }

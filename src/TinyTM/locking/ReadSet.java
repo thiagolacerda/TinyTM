@@ -18,31 +18,35 @@ import java.util.Set;
 
 /**
  * A thread-local read set for the atomic locking object implementation.
+ *
  * @author Maurice Herlihy
  */
-public class ReadSet implements Iterable <LockObject<?>> {
-  static ThreadLocal<Set<LockObject<?>>> local = new ThreadLocal<Set<LockObject<?>>>() {
-    protected Set<LockObject<?>> initialValue() {
-      return new HashSet<LockObject<?>>();
+public class ReadSet implements Iterable<LockObject<?>> {
+    static ThreadLocal<Set<LockObject<?>>> local = new ThreadLocal<Set<LockObject<?>>>() {
+        protected Set<LockObject<?>> initialValue() {
+            return new HashSet<LockObject<?>>();
+        }
+    };
+
+    Set<LockObject<?>> set;
+
+    private ReadSet() {
+        set = local.get();
     }
-  };
-  
-  Set<LockObject<?>> set;
-  
-  private ReadSet() {
-    set = local.get();
-  }
-  public static ReadSet getLocal() {
-    return new ReadSet();
-  }
-  
-  public Iterator<LockObject<?>> iterator() {
-    return set.iterator();
-  }
-  public void add(LockObject<?> x) {
-    set.add(x);
-  }
-  public void clear() {
-    set.clear();
-  }
+
+    public static ReadSet getLocal() {
+        return new ReadSet();
+    }
+
+    public Iterator<LockObject<?>> iterator() {
+        return set.iterator();
+    }
+
+    public void add(LockObject<?> x) {
+        set.add(x);
+    }
+
+    public void clear() {
+        set.clear();
+    }
 }

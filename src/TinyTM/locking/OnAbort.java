@@ -14,14 +14,15 @@ package TinyTM.locking;
 
 /**
  * Handler for transaction abort.
+ *
  * @author Maurice Herlihy
  */
 public class OnAbort implements Runnable {
-  public void run() {
-    WriteSet writeSet = WriteSet.getLocal();
-    ReadSet readSet  = ReadSet.getLocal();
-    VersionClock.setReadStamp();
-    writeSet.clear();
-    readSet.clear();
-  }
+    public void run() {
+        WriteSet writeSet = WriteSet.getLocal();
+        ReadSet readSet = ReadSet.getLocal();
+        VersionClock.setReadStamp();
+        writeSet.clear();
+        readSet.clear();
+    }
 }

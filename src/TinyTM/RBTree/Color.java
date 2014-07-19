@@ -13,8 +13,9 @@
 package TinyTM.RBTree;
 
 /**
- *
  * @author mph
  */
-  
-  public enum Color {BLACK, RED};
+
+public enum Color {
+    BLACK, RED
+};

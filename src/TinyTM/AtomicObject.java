@@ -14,18 +14,23 @@ package TinyTM;
 
 /**
  * Base class for transactional synchronization state.
+ *
  * @param <T> type
  * @author Maurice Herlihy
  */
-public abstract class AtomicObject <T extends Copyable<T>> {
-  protected Class<T> myClass;
-  protected T _init;
-  @SuppressWarnings("unchecked")
-  public AtomicObject(T init) {
-    _init = init;
-    myClass = (Class<T>) init.getClass();
-  }
-  public abstract T openRead();  
-  public abstract T openWrite();  
-  public abstract boolean validate();
+public abstract class AtomicObject<T extends Copyable<T>> {
+    protected Class<T> myClass;
+    protected T _init;
+
+    @SuppressWarnings("unchecked")
+    public AtomicObject(T init) {
+        _init = init;
+        myClass = (Class<T>) init.getClass();
+    }
+
+    public abstract T openRead();
+
+    public abstract T openWrite();
+
+    public abstract boolean validate();
 }

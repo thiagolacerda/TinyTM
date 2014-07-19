@@ -16,136 +16,143 @@ package TinyTM.ofree;
  * Encapsulates transactional synchronization for obstruction-free objects.
  * @author Maurice Herlihy
  */
-import TinyTM.*;
+
+import TinyTM.Copyable;
+import TinyTM.Transaction;
 import TinyTM.contention.ContentionManager;
 import TinyTM.exceptions.AbortedException;
 import TinyTM.exceptions.PanicException;
-import TinyTM.Copyable;
+
 import java.util.concurrent.atomic.AtomicReference;
+
 public class FreeObject<T extends Copyable<T>> extends TinyTM.AtomicObject<T> {
-  AtomicReference<Locator> start;
-  public FreeObject(T init) {
-    super(init);
-    start = new AtomicReference<Locator>(new Locator(init));
-  }
-  
-  public T  openWrite() {
-    Transaction me = Transaction.getLocal();
-    switch (me.getStatus()) {
-      case COMMITTED:
-        return openSequential();
-      case ABORTED:
-        throw new AbortedException();
-      case ACTIVE:
-        Locator locator = start.get();
-        if (locator.owner == me) {
-          return locator.newVersion;
-        }
-        Locator newLocator = new Locator();
-        while (!Thread.currentThread().isInterrupted()) {
-          Locator oldLocator = start.get();
-          Transaction writer = oldLocator.owner;
-          switch (writer.getStatus()) {
+    AtomicReference<Locator> start;
+
+    public FreeObject(T init) {
+        super(init);
+        start = new AtomicReference<Locator>(new Locator(init));
+    }
+
+    public T openWrite() {
+        Transaction me = Transaction.getLocal();
+        switch (me.getStatus()) {
             case COMMITTED:
-              newLocator.oldVersion = oldLocator.newVersion;
-              break;
+                return openSequential();
             case ABORTED:
-              newLocator.oldVersion = oldLocator.oldVersion;
-              break;
+                throw new AbortedException();
             case ACTIVE:
-              ContentionManager.getLocal().resolve(me, writer);
-              continue;
-          }
-          try {
-            newLocator.newVersion = myClass.newInstance();
-          } catch (Exception ex) {
-            throw new PanicException(ex);
-          }
-          newLocator.oldVersion.copyTo(newLocator.newVersion);
-          if (start.compareAndSet(oldLocator, newLocator)) {
-            return newLocator.newVersion;
-          }
+                Locator locator = start.get();
+                if (locator.owner == me) {
+                    return locator.newVersion;
+                }
+                Locator newLocator = new Locator();
+                while (!Thread.currentThread().isInterrupted()) {
+                    Locator oldLocator = start.get();
+                    Transaction writer = oldLocator.owner;
+                    switch (writer.getStatus()) {
+                        case COMMITTED:
+                            newLocator.oldVersion = oldLocator.newVersion;
+                            break;
+                        case ABORTED:
+                            newLocator.oldVersion = oldLocator.oldVersion;
+                            break;
+                        case ACTIVE:
+                            ContentionManager.getLocal().resolve(me, writer);
+                            continue;
+                    }
+                    try {
+                        newLocator.newVersion = myClass.newInstance();
+                    } catch (Exception ex) {
+                        throw new PanicException(ex);
+                    }
+                    newLocator.oldVersion.copyTo(newLocator.newVersion);
+                    if (start.compareAndSet(oldLocator, newLocator)) {
+                        return newLocator.newVersion;
+                    }
+                }
+                me.abort(); // time's up
+                throw new AbortedException();
+            default:
+                throw new PanicException("Unexpected transaction state");
         }
-        me.abort(); // time's up
-        throw new AbortedException();
-      default:
-        throw new PanicException("Unexpected transaction state");
     }
-  }
-  private T openSequential() {
-    Locator locator = start.get();
-    switch (locator.owner.getStatus()) {
-      case COMMITTED:
-        return locator.newVersion;
-      case ABORTED:
-        return locator.oldVersion;
-      default:
-        throw new PanicException("Active/Inactitive transaction conflict");
-    }
-  }
-  
-  public T openRead() {
-    Transaction me = Transaction.getLocal();
-    switch (me.getStatus()) {
-      case COMMITTED:
-        return openSequential();
-      case ABORTED:
-        throw new AbortedException();
-      case ACTIVE:
+
+    private T openSequential() {
         Locator locator = start.get();
-        if (locator.owner == me) {
-          return locator.newVersion;
-        }
-        Locator newLocator = new Locator();
-        while (!Thread.currentThread().isInterrupted()) {
-          Locator oldLocator = start.get();
-          Transaction writer = oldLocator.owner;
-          switch (writer.getStatus()) {
+        switch (locator.owner.getStatus()) {
             case COMMITTED:
-              newLocator.oldVersion = oldLocator.newVersion;
-              break;
+                return locator.newVersion;
             case ABORTED:
-              newLocator.oldVersion = oldLocator.oldVersion;
-              break;
-            case ACTIVE:
-              ContentionManager.getLocal().resolve(me, writer);
-              continue;
-          }
-          if (start.compareAndSet(oldLocator, newLocator)) {
-            return newLocator.newVersion;
-          }
+                return locator.oldVersion;
+            default:
+                throw new PanicException("Active/Inactitive transaction conflict");
         }
-        me.abort(); // time's up
-        throw new AbortedException();
-      default:
-        throw new PanicException("Unexpected transaction state");
     }
-  }
-  
-  public boolean validate() {
-    switch (Transaction.getLocal().getStatus()) {
-      case COMMITTED:
-        return true;
-      case ABORTED:
-        return false;
-      case ACTIVE:
-        return true;
-      default:
-        throw new PanicException("Unexpected Transaction state");
+
+    public T openRead() {
+        Transaction me = Transaction.getLocal();
+        switch (me.getStatus()) {
+            case COMMITTED:
+                return openSequential();
+            case ABORTED:
+                throw new AbortedException();
+            case ACTIVE:
+                Locator locator = start.get();
+                if (locator.owner == me) {
+                    return locator.newVersion;
+                }
+                Locator newLocator = new Locator();
+                while (!Thread.currentThread().isInterrupted()) {
+                    Locator oldLocator = start.get();
+                    Transaction writer = oldLocator.owner;
+                    switch (writer.getStatus()) {
+                        case COMMITTED:
+                            newLocator.oldVersion = oldLocator.newVersion;
+                            break;
+                        case ABORTED:
+                            newLocator.oldVersion = oldLocator.oldVersion;
+                            break;
+                        case ACTIVE:
+                            ContentionManager.getLocal().resolve(me, writer);
+                            continue;
+                    }
+                    if (start.compareAndSet(oldLocator, newLocator)) {
+                        return newLocator.newVersion;
+                    }
+                }
+                me.abort(); // time's up
+                throw new AbortedException();
+            default:
+                throw new PanicException("Unexpected transaction state");
+        }
     }
-  }
-  
-  private class Locator {
-    Transaction owner;
-    T oldVersion;
-    T newVersion;
-    Locator() {
-      owner = Transaction.COMMITTED;
+
+    public boolean validate() {
+        switch (Transaction.getLocal().getStatus()) {
+            case COMMITTED:
+                return true;
+            case ABORTED:
+                return false;
+            case ACTIVE:
+                return true;
+            default:
+                throw new PanicException("Unexpected Transaction state");
+        }
     }
-    Locator(T version) {
-      this();
-      newVersion = version;
+
+    private class Locator {
+        Transaction owner;
+        T oldVersion;
+        T newVersion;
+
+        Locator() {
+            owner = Transaction.COMMITTED;
+        }
+
+        Locator(T version) {
+            this();
+            newVersion = version;
+        }
     }
-  }
-  
+
 }

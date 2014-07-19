@@ -11,20 +11,21 @@ package TinyTM.list;
 
 /**
  * Node interface used for List example
+ *
  * @param <T> type
  * @author Maurice Herlihy
  */
 public interface INode<T> {
 
-  int getKey();
+    int getKey();
 
-  void setKey(int value);
+    void setKey(int value);
 
-  T getItem();
+    T getItem();
 
-  void setItem(T value);
+    void setItem(T value);
 
-  INode<T> getNext();
+    INode<T> getNext();
 
-  void setNext(INode<T> value);
+    void setNext(INode<T> value);
 }
