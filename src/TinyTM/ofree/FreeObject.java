@@ -43,15 +43,29 @@ public class FreeObject<T extends Copyable<T>> extends TinyTM.AtomicObject<T> {
             case ACTIVE:
                 Locator locator = start.get();
                 if (locator.owner == me) {
+
+                    // If this object was previously opened on read mode, then we just have the old version.
+                    if (locator.newVersion == null) {
+                        // Copy oldVersion to newVersion
+                        try {
+                            locator.newVersion = myClass.newInstance();
+                        } catch (Exception e) {
+                            throw new PanicException(e);
+                        }
+
+                        locator.oldVersion.copyTo(locator.newVersion);
+                    }
+
                     return locator.newVersion;
                 }
-                Locator newLocator = new Locator();
+
+                Locator newLocator = new Locator(me);
                 while (!Thread.currentThread().isInterrupted()) {
                     Locator oldLocator = start.get();
                     Transaction writer = oldLocator.owner;
                     switch (writer.getStatus()) {
                         case COMMITTED:
-                            newLocator.oldVersion = oldLocator.newVersion;
+                            newLocator.oldVersion = (oldLocator.newVersion == null) ? oldLocator.oldVersion : oldLocator.newVersion;
                             break;
                         case ABORTED:
                             newLocator.oldVersion = oldLocator.oldVersion;
@@ -79,9 +93,15 @@ public class FreeObject<T extends Copyable<T>> extends TinyTM.AtomicObject<T> {
 
     private T openSequential() {
         Locator locator = start.get();
+
+        // If a different transaction is holding the object, then we invoke ContentionManager to resolve the conflict.
+        while(locator.owner.getStatus() == Transaction.Status.ACTIVE) {
+            ContentionManager.getLocal().resolve(Transaction.getLocal(), locator.owner);
+        }
+
         switch (locator.owner.getStatus()) {
             case COMMITTED:
-                return locator.newVersion;
+                return (locator.newVersion == null) ? locator.oldVersion : locator.newVersion;
             case ABORTED:
                 return locator.oldVersion;
             default:
@@ -99,15 +119,16 @@ public class FreeObject<T extends Copyable<T>> extends TinyTM.AtomicObject<T> {
             case ACTIVE:
                 Locator locator = start.get();
                 if (locator.owner == me) {
-                    return locator.newVersion;
+                    // If this object was previously opened on read mode, then we just have the old version.
+                    return (locator.newVersion == null) ? locator.oldVersion : locator.newVersion;
                 }
-                Locator newLocator = new Locator();
+                Locator newLocator = new Locator(me);
                 while (!Thread.currentThread().isInterrupted()) {
                     Locator oldLocator = start.get();
                     Transaction writer = oldLocator.owner;
                     switch (writer.getStatus()) {
                         case COMMITTED:
-                            newLocator.oldVersion = oldLocator.newVersion;
+                            newLocator.oldVersion = (oldLocator.newVersion == null) ? oldLocator.oldVersion : oldLocator.newVersion;
                             break;
                         case ABORTED:
                             newLocator.oldVersion = oldLocator.oldVersion;
@@ -116,8 +137,9 @@ public class FreeObject<T extends Copyable<T>> extends TinyTM.AtomicObject<T> {
                             ContentionManager.getLocal().resolve(me, writer);
                             continue;
                     }
+
                     if (start.compareAndSet(oldLocator, newLocator)) {
-                        return newLocator.newVersion;
+                        return newLocator.oldVersion;
                     }
                 }
                 me.abort(); // time's up
@@ -152,6 +174,10 @@ public class FreeObject<T extends Copyable<T>> extends TinyTM.AtomicObject<T> {
         Locator(T version) {
             this();
             newVersion = version;
+        }
+
+        Locator(Transaction me) {
+            owner = me;
         }
     }
 
