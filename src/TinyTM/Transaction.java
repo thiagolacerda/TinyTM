@@ -17,21 +17,27 @@ import java.util.concurrent.atomic.AtomicReference;
 public class Transaction {
     public static final Transaction COMMITTED = new Transaction(Status.COMMITTED);
 
-    ;
     static ThreadLocal<Transaction> local = new ThreadLocal<Transaction>() {
         @Override
         protected Transaction initialValue() {
             return new Transaction(Status.COMMITTED);
         }
     };
+
     private final AtomicReference<Status> status;
+    private final long timestamp;
 
     public Transaction() {
-        status = new AtomicReference<Status>(Status.ACTIVE);
+        this(Status.ACTIVE, System.currentTimeMillis());
     }
 
     private Transaction(Transaction.Status myStatus) {
+        this(myStatus, System.currentTimeMillis());
+    }
+
+    private Transaction(Transaction.Status myStatus, long myTimestamp) {
         status = new AtomicReference<Status>(myStatus);
+        timestamp = myTimestamp;
     }
 
     public static Transaction getLocal() {
@@ -44,6 +50,10 @@ public class Transaction {
 
     public Status getStatus() {
         return status.get();
+    }
+
+    public long getTimestamp() {
+        return timestamp;
     }
 
     public boolean commit() {
