@@ -26,6 +26,7 @@ public class Transaction {
 
     private final AtomicReference<Status> status;
     private final long timestamp;
+    private volatile boolean waiting;
 
     public Transaction() {
         this(Status.ACTIVE, System.currentTimeMillis());
@@ -58,6 +59,14 @@ public class Transaction {
 
     public long getTimestamp() {
         return timestamp;
+    }
+
+    public boolean isWaiting() {
+        return waiting;
+    }
+
+    public void setWaiting(boolean newWaiting) {
+        waiting = newWaiting;
     }
 
     public boolean commit() {
