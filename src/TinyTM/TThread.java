@@ -32,11 +32,11 @@ public class TThread extends java.lang.Thread {
 
     public static <T> T doIt(Callable<T> xaction) throws Exception {
         T result;
-        Transaction me;
+        Transaction me = new Transaction();
         Thread myThread = Thread.currentThread();
         Exception rethrow = null;
         while (!myThread.isInterrupted()) {
-            me = new Transaction();
+            me = new Transaction(me);
             Transaction.setLocal(me);
             onStart.run();
             try {

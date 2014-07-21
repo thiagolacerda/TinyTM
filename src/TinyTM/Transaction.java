@@ -31,6 +31,10 @@ public class Transaction {
         this(Status.ACTIVE, System.currentTimeMillis());
     }
 
+    public Transaction(Transaction base) {
+        this(Status.ACTIVE, base.getTimestamp());
+    }
+
     private Transaction(Transaction.Status myStatus) {
         this(myStatus, System.currentTimeMillis());
     }
