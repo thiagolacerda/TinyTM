@@ -12,6 +12,7 @@
 
 package TinyTM;
 
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Transaction {
@@ -27,6 +28,7 @@ public class Transaction {
     private final AtomicReference<Status> status;
     private final long timestamp;
     private volatile boolean waiting;
+    private AtomicLong priority;
 
     public Transaction() {
         this(Status.ACTIVE, System.currentTimeMillis());
@@ -43,6 +45,7 @@ public class Transaction {
     private Transaction(Transaction.Status myStatus, long myTimestamp) {
         status = new AtomicReference<Status>(myStatus);
         timestamp = myTimestamp;
+        priority = new AtomicLong(0);
     }
 
     public static Transaction getLocal() {
@@ -69,8 +72,21 @@ public class Transaction {
         waiting = newWaiting;
     }
 
+    public long getPriority() {
+        return priority.get();
+    }
+
+    public void incrementPriority() {
+        priority.getAndIncrement();
+    }
+
     public boolean commit() {
-        return status.compareAndSet(Status.ACTIVE, Status.COMMITTED);
+        boolean result = status.compareAndSet(Status.ACTIVE, Status.COMMITTED);
+
+        if (result)
+            priority.set(0);
+
+        return result;
     }
 
     public boolean abort() {

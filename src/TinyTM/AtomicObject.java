@@ -28,7 +28,13 @@ public abstract class AtomicObject<T extends Copyable<T>> {
         myClass = (Class<T>) init.getClass();
     }
 
-    public abstract T openRead();
+    public T openRead() {
+        Transaction me = Transaction.getLocal();
+        me.incrementPriority();
+        return _openRead();
+    }
+
+    protected abstract T _openRead();
 
     public abstract T openWrite();
 

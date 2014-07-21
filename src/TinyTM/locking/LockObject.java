@@ -40,7 +40,7 @@ public class LockObject<T extends Copyable<T>> extends AtomicObject<T> {
         stamp = 0;
     }
 
-    public T openRead() {
+    protected T _openRead() {
         ReadSet readSet = ReadSet.getLocal();
         switch (Transaction.getLocal().getStatus()) {
             case COMMITTED:

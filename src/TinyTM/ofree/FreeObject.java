@@ -109,7 +109,7 @@ public class FreeObject<T extends Copyable<T>> extends TinyTM.AtomicObject<T> {
         }
     }
 
-    public T openRead() {
+    protected T _openRead() {
         Transaction me = Transaction.getLocal();
         switch (me.getStatus()) {
             case COMMITTED:
