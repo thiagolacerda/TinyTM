@@ -17,7 +17,8 @@ import java.util.concurrent.atomic.AtomicReference;
 public class Transaction {
     public static final Transaction COMMITTED = new Transaction(Status.COMMITTED);
 
-    ;
+    private long timestamp;
+
     static ThreadLocal<Transaction> local = new ThreadLocal<Transaction>() {
         @Override
         protected Transaction initialValue() {
@@ -52,6 +53,14 @@ public class Transaction {
 
     public boolean abort() {
         return status.compareAndSet(Status.ACTIVE, Status.ABORTED);
+    }
+
+    public void setTimestamp() {
+        timestamp = System.currentTimeMillis();
+    }
+
+    public long getTimestamp() {
+        return timestamp;
     }
 
     public enum Status {ABORTED, ACTIVE, COMMITTED}

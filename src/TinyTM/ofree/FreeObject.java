@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class FreeObject<T extends Copyable<T>> extends TinyTM.AtomicObject<T> {
     AtomicReference<Locator> start;
+    private Transaction.Status lastStatus = Transaction.Status.ACTIVE;
 
     public FreeObject(T init) {
         super(init);
@@ -71,6 +72,8 @@ public class FreeObject<T extends Copyable<T>> extends TinyTM.AtomicObject<T> {
                             newLocator.oldVersion = oldLocator.oldVersion;
                             break;
                         case ACTIVE:
+                            if (lastStatus != Transaction.Status.ABORTED)
+                                me.setTimestamp();
                             ContentionManager.getLocal().resolve(me, writer);
                             continue;
                     }
@@ -134,6 +137,8 @@ public class FreeObject<T extends Copyable<T>> extends TinyTM.AtomicObject<T> {
                             newLocator.oldVersion = oldLocator.oldVersion;
                             break;
                         case ACTIVE:
+                            if (lastStatus != Transaction.Status.ABORTED)
+                                me.setTimestamp();
                             ContentionManager.getLocal().resolve(me, writer);
                             continue;
                     }
@@ -150,6 +155,7 @@ public class FreeObject<T extends Copyable<T>> extends TinyTM.AtomicObject<T> {
     }
 
     public boolean validate() {
+        lastStatus = Transaction.getLocal().getStatus();
         switch (Transaction.getLocal().getStatus()) {
             case COMMITTED:
                 return true;
