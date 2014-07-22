@@ -18,6 +18,7 @@ public class Transaction {
     public static final Transaction COMMITTED = new Transaction(Status.COMMITTED);
 
     private long timestamp;
+    private boolean waiting;
 
     static ThreadLocal<Transaction> local = new ThreadLocal<Transaction>() {
         @Override
@@ -61,6 +62,14 @@ public class Transaction {
 
     public long getTimestamp() {
         return timestamp;
+    }
+
+    public void setWaiting(boolean value) {
+        waiting = value;
+    }
+
+    public boolean isWaiting() {
+        return waiting;
     }
 
     public enum Status {ABORTED, ACTIVE, COMMITTED}
