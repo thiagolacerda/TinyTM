@@ -84,6 +84,7 @@ public class FreeObject<T extends Copyable<T>> extends TinyTM.AtomicObject<T> {
                     }
                     newLocator.oldVersion.copyTo(newLocator.newVersion);
                     if (start.compareAndSet(oldLocator, newLocator)) {
+                        ContentionManager.getLocal().setPriority();
                         return newLocator.newVersion;
                     }
                 }
@@ -144,6 +145,7 @@ public class FreeObject<T extends Copyable<T>> extends TinyTM.AtomicObject<T> {
                     }
 
                     if (start.compareAndSet(oldLocator, newLocator)) {
+                        ContentionManager.getLocal().setPriority();
                         return newLocator.oldVersion;
                     }
                 }

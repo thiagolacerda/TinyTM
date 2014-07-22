@@ -14,11 +14,14 @@ package TinyTM;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import TinyTM.contention.ContentionManager;
+
 public class Transaction {
     public static final Transaction COMMITTED = new Transaction(Status.COMMITTED);
 
     private long timestamp;
     private boolean waiting;
+    private ContentionManager manager;
 
     static ThreadLocal<Transaction> local = new ThreadLocal<Transaction>() {
         @Override
@@ -30,6 +33,7 @@ public class Transaction {
 
     public Transaction() {
         status = new AtomicReference<Status>(Status.ACTIVE);
+        manager = ContentionManager.getLocal();
     }
 
     private Transaction(Transaction.Status myStatus) {
@@ -72,5 +76,8 @@ public class Transaction {
         return waiting;
     }
 
+    public ContentionManager getContentionManager() {
+        return manager;
+    }
     public enum Status {ABORTED, ACTIVE, COMMITTED}
 }

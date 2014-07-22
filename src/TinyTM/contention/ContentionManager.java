@@ -29,6 +29,8 @@ import TinyTM.exceptions.PanicException;
  */
 public abstract class ContentionManager {
 
+	private long priority;
+
     static ThreadLocal<ContentionManager> local = new ThreadLocal<ContentionManager>() {
 
         @Override
@@ -40,6 +42,14 @@ public abstract class ContentionManager {
             }
         }
     };
+
+    public void setPriority() {
+        priority++;
+    }
+
+    public long getPriority() {
+        return priority;
+    }
 
     public static ContentionManager getLocal() {
         return local.get();
